@@ -39,8 +39,8 @@ html {
 
 .app {
   display: grid;
-  grid-template-columns: 1fr 4fr;
-  grid-template-rows: 8fr 1fr;
+  grid-template-columns: 23rem 1fr;
+  grid-template-rows: 1fr 9.1rem;
   grid-template-areas:
     'nav browser'
     'player player';
@@ -54,8 +54,17 @@ html {
 }
 .browser {
   grid-area: browser;
+  padding: 0 3.2rem;
+  background-color: $colorBackground2;
+  overflow-y: scroll;
+  font-size: $fontSizeContent;
 }
 .player {
   grid-area: player;
+}
+
+// GENERIC COMPONENT
+.section {
+  padding: 1.6rem 0;
 }
 </style>

@@ -4,8 +4,8 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
 .player {
-  background-color: hotpink;
+  background-color: $colorBackground3;
 }
 </style>

@@ -10,6 +10,8 @@ https://css-tricks.com/how-to-import-a-sass-file-into-every-vue-component-in-an-
 
 https://dev.to/ceppeu/using-sass-global-variables-in-nuxt-js-j0k
 
+https://stackoverflow.com/questions/57386325/what-is-the-best-way-of-using-normalize-css-in-nuxt-js-projects
+
 ## Build Setup
 
 ```bash
