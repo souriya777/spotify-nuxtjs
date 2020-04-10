@@ -7,6 +7,11 @@
     </div>
     <ul class="nav-list">
       <li class="nav-item">
+        <nuxt-link to="/login">
+          <span class="nav-item_label">Login</span>
+        </nuxt-link>
+      </li>
+      <li class="nav-item">
         <nuxt-link to="/">
           <span class="nav-item_icon">
             <home-icon />
