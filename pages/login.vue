@@ -2,11 +2,6 @@
   <div>
     <h1>Login</h1>
     <button @click="login">Authorize</button>
-    <p>url: {{ url }}</p>
-    <p>spotifyClientId: {{ spotifyClientId }}</p>
-    <p>spotifyClientSecret: {{ spotifyClientSecret }}</p>
-    <p>spotifyRedirectUri: {{ spotifyRedirectUri }}</p>
-    <p>spotifyScopes: {{ spotifyScopes }}</p>
   </div>
 </template>
 <script>
