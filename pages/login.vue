@@ -1,118 +1,91 @@
 <template>
   <div>
     <h1>Login</h1>
-    <button @click="login">Authorize</button>
-    <!-- <button v-if="spotifyCode" @click="getToken">Get token</button> -->
-    <p>code: {{ spotifyCode }}</p>
-    <p>token: {{ spotifyToken }}</p>
-    <div v-if="spotifyCode" class="code">
-      <code>{{ curl }}</code>
+    <div>
+      <h2>Authorization code</h2>
+      <code>{{ authorizationCode }}</code>
+    </div>
+    <div>
+      <h2>Access Token</h2>
+      <code>{{ token }}</code>
     </div>
   </div>
 </template>
 <script>
-// import axios from 'axios'
+// TODO move in function
+import querystring from 'querystring'
 
 const AUTHORIZE_ENDPOINT = 'https://accounts.spotify.com/authorize'
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token'
 
 export default {
-  // 1st
-  fetch() {
-    // this.login()
-    this.spotifyToken = this.$route.query.code
-    // this.spotifyToken = 'fetch - token OK'
-    // this.spotifyToken = 'fetch - token KO'
+  async fetch() {
+    this.authorizationCode = this.$route.query.code
+
+    if (this.authorizationCode) {
+      await this.getToken(this.authorizationCode)
+    } else {
+      this.login()
+    }
   },
-  // 2nd
-  // asyncData() {
-  //   return {
-  //     spotifyToken: 'asyncData'
-  //   }
-  // },
   data() {
     return {
-      spotifyCode: '',
-      // spotifyToken: 'data',
-      spotifyClientId: process.env.NUXT_ENV_SPOTIFY_CLIENT_ID,
-      spotifyClientSecret: process.env.NUXT_ENV_SPOTIFY_CLIENT_SECRET,
-      spotifyRedirectUri: process.env.NUXT_ENV_SPOTIFY_REDIRECT_URI,
-      spotifyScopes: process.env.NUXT_ENV_SPOTIFY_SCOPES
+      authorizationCode: '',
+      token: ''
     }
-  },
-  computed: {
-    curl() {
-      return `
-          curl -d grant_type=authorization_code -d code=${this.spotifyCode} -d redirect_uri=${this.spotifyRedirectUri} -d client_id=${this.spotifyClientId} -d client_secret=${this.spotifyClientSecret} ${TOKEN_ENDPOINT}
-        `
-    }
-  },
-  mounted() {
-    this.spotifyCode = this.$route.query.code
-    this.login()
-    // this.getToken()
   },
   methods: {
     login() {
       const url = `${AUTHORIZE_ENDPOINT}?response_type=code&client_id=${
-        this.spotifyClientId
+        process.env.NUXT_ENV_SPOTIFY_CLIENT_ID
       }&scope=${encodeURIComponent(
-        this.spotifyScopes
-      )}&redirect_uri=${encodeURIComponent(this.spotifyRedirectUri)}`
+        process.env.NUXT_ENV_SPOTIFY_SCOPES
+      )}&redirect_uri=${encodeURIComponent(
+        process.env.NUXT_ENV_SPOTIFY_REDIRECT_URI
+      )}`
 
       window.location = url
     },
-    getToken() {
-      const authOptions = {
-        url: TOKEN_ENDPOINT,
-        form: {
-          code: this.spotifyCode,
-          redirect_uri: this.spotifyRedirectUri,
-          grant_type: 'authorization_code'
-        },
+    async getToken(authorizationCode) {
+      const data = {
+        code: authorizationCode,
+        redirect_uri: process.env.NUXT_ENV_SPOTIFY_REDIRECT_URI,
+        grant_type: 'authorization_code',
+        client_id: process.env.NUXT_ENV_SPOTIFY_CLIENT_ID,
+        client_secret: process.env.NUXT_ENV_SPOTIFY_CLIENT_SECRET
+      }
+      const options = {
+        method: 'POST',
         headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
           Authorization:
             'Basic ' +
             Buffer.from(
-              this.spotifyClientId + ':' + this.spotifyClientSecret
+              process.env.NUXT_ENV_SPOTIFY_CLIENT_ID +
+                ':' +
+                process.env.NUXT_ENV_SPOTIFY_CLIENT_SECRET
             ).toString('base64')
         },
-        json: true
+        data: querystring.stringify(data),
+        url: TOKEN_ENDPOINT
       }
-      this.$axios(authOptions, (error, response, body) => {
-        if (error) {
-          this.spotifyToken = 'errorrrr'
-        }
-        this.spotifyToken = response
-      })
-      // const bearer = Buffer.from(
-      //   this.spotifyClientId + ':' + this.spotifyClientSecret
-      // ).toString('base64')
-      // const response = await this.$axios.$post(
-      //   TOKEN_ENDPOINT,
-      //   {
-      //     grant_type: 'authorization_code',
-      //     code: this.spotifyCode,
-      //     redirect_uri: this.spotifyRedirectUri
-      //   },
-      //   {
-      //     headers: {
-      //       Accept: 'application/json',
-      //       Authorization: `Basic ${bearer}`,
-      //       'Content-Type': 'application/x-www-form-urlencoded'
-      //     }
-      //   }
-      // )
-      // this.spotifyToken = response
+
+      const instance = this
+      await this.$axios(options)
+        .then(function(response) {
+          instance.token = {
+            access_token: response.data.access_token,
+            token_type: response.data.token_type,
+            scope: response.data.scope,
+            expires_in: response.data.expires_in,
+            refresh_token: response.data.refresh_token
+          }
+        })
+        .catch(function(error) {
+          instance.token = error.toJSON()
+        })
     }
   }
 }
 </script>
-<style>
-.code {
-  margin: 2rem;
-  color: #222;
-  font-size: 1.6rem;
-  background-color: #fff;
-}
-</style>
