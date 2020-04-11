@@ -17,13 +17,23 @@ const AUTHORIZE_ENDPOINT = 'https://accounts.spotify.com/authorize'
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token'
 
 export default {
+  // 1st
   fetch() {
-    this.login()
+    // this.login()
+    this.spotifyToken = this.$route.query.code
+    // this.spotifyToken = 'fetch - token OK'
+    // this.spotifyToken = 'fetch - token KO'
   },
+  // 2nd
+  // asyncData() {
+  //   return {
+  //     spotifyToken: 'asyncData'
+  //   }
+  // },
   data() {
     return {
       spotifyCode: '',
-      spotifyToken: '',
+      // spotifyToken: 'data',
       spotifyClientId: process.env.NUXT_ENV_SPOTIFY_CLIENT_ID,
       spotifyClientSecret: process.env.NUXT_ENV_SPOTIFY_CLIENT_SECRET,
       spotifyRedirectUri: process.env.NUXT_ENV_SPOTIFY_REDIRECT_URI,
@@ -39,7 +49,8 @@ export default {
   },
   mounted() {
     this.spotifyCode = this.$route.query.code
-    this.getToken()
+    this.login()
+    // this.getToken()
   },
   methods: {
     login() {
