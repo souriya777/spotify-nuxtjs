@@ -19,6 +19,7 @@ const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token'
 
 export default {
   async fetch() {
+    this.accessToken = this.$route.fullPath // FIXME
     this.authorizationCode = this.$route.query.code
 
     if (this.authorizationCode) {
