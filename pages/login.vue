@@ -8,11 +8,22 @@
     <div>
       <h2>Access token</h2>
       <code>{{ accessToken }}</code>
+      <h2>Refresh token</h2>
+      <code>{{ refreshToken }}</code>
+    </div>
+    <div>
+      <h2>User ID</h2>
+      <code>{{ userId }}</code>
     </div>
     <div>
       <h2>Spotify</h2>
+      <button @click="getRefreshToken">REFRESH TOKEN</button>
       <button @click="spotifyMe">SPOTIFY ME</button>
-      <code>{{ spotifyResult }}</code>
+      <button @click="getAlbums">ALBUMS</button>
+      <button @click="getPlaylists">{{ userId }} PLAYLIST</button>
+      <div>
+        <code>{{ spotifyResult }}</code>
+      </div>
     </div>
   </div>
 </template>
@@ -27,7 +38,7 @@ export default {
     this.authorizationCode = this.$route.query.code
 
     if (this.authorizationCode) {
-      await this.getAccessToken(this.authorizationCode)
+      await this.getTokens(this.authorizationCode)
     } else {
       this.authorize()
     }
@@ -36,7 +47,13 @@ export default {
     return {
       authorizationCode: '',
       accessToken: '',
+      refreshToken: '',
       spotifyResult: ''
+    }
+  },
+  computed: {
+    userId() {
+      return this.spotifyResult?.data?.id
     }
   },
   methods: {
@@ -50,7 +67,7 @@ export default {
       )}`
       window.location = url
     },
-    async getAccessToken(authorizationCode) {
+    async getTokens(authorizationCode) {
       const data = {
         code: authorizationCode,
         redirect_uri: process.env.NUXT_ENV_SPOTIFY_REDIRECT_URI,
@@ -61,7 +78,6 @@ export default {
       const options = {
         method: 'POST',
         headers: {
-          Accept: 'application/json',
           'Content-Type': 'application/x-www-form-urlencoded',
           Authorization:
             'Basic ' +
@@ -79,6 +95,38 @@ export default {
       await this.$axios(options)
         .then(function(response) {
           instance.accessToken = response.data.access_token
+          instance.refreshToken = response.data.refresh_token
+        })
+        .catch(function(error) {
+          instance.token = error.toJSON()
+        })
+    },
+    async getRefreshToken() {
+      const data = {
+        grant_type: 'refresh_token',
+        refresh_token: this.refreshToken
+      }
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization:
+            'Basic ' +
+            Buffer.from(
+              process.env.NUXT_ENV_SPOTIFY_CLIENT_ID +
+                ':' +
+                process.env.NUXT_ENV_SPOTIFY_CLIENT_SECRET
+            ).toString('base64')
+        },
+        data: querystring.stringify(data),
+        url: TOKEN_ENDPOINT
+      }
+
+      const instance = this
+      await this.$axios(options)
+        .then(function(response) {
+          instance.accessToken = response.data.access_token
+          instance.refreshToken = response.data.refresh_token
         })
         .catch(function(error) {
           instance.token = error.toJSON()
@@ -89,6 +137,30 @@ export default {
         'https://api.spotify.com/v1/me',
         {
           headers: {
+            Authorization: 'Bearer ' + this.accessToken
+          }
+        }
+      )
+    },
+    async getAlbums() {
+      this.spotifyResult = await this.$axios.get(
+        'https://api.spotify.com/v1/me/albums',
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + this.accessToken
+          }
+        }
+      )
+    },
+    async getPlaylists() {
+      this.spotifyResult = await this.$axios.get(
+        `https://api.spotify.com/v1/users/${this.userId}/playlists`,
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
             Authorization: 'Bearer ' + this.accessToken
           }
         }
