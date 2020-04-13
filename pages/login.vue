@@ -21,7 +21,7 @@ export default {
   fetch() {
     this.authorizationCode = this.$route.query.code
     this.accessToken = this.$route.fullPath
-    // haha
+
     if (this.authorizationCode) {
       //   await this.getAccessToken(this.authorizationCode)
     } else {
