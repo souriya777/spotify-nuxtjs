@@ -35,14 +35,14 @@ export default {
       const options = {
         method: 'POST',
         headers: {
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-          // Authorization:
-          //   'Basic ' +
-          //   Buffer.from(
-          //     process.env.NUXT_ENV_SPOTIFY_CLIENT_ID +
-          //       ':' +
-          //       process.env.NUXT_ENV_SPOTIFY_CLIENT_SECRET
-          //   ).toString('base64')
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization:
+            'Basic ' +
+            Buffer.from(
+              process.env.NUXT_ENV_SPOTIFY_CLIENT_ID +
+                ':' +
+                process.env.NUXT_ENV_SPOTIFY_CLIENT_SECRET
+            ).toString('base64')
         },
         data: querystring.stringify(data),
         url: TOKEN_ENDPOINT
