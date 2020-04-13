@@ -22,11 +22,11 @@ export default {
     this.authorizationCode = this.$route.query.code
     this.accessToken = this.$route.fullPath
 
-    // if (this.authorizationCode) {
-    //   await this.getAccessToken(this.authorizationCode)
-    // } else {
-    // this.authorize()
-    // }
+    if (this.authorizationCode) {
+      //   await this.getAccessToken(this.authorizationCode)
+    } else {
+      this.authorize()
+    }
   },
   data() {
     return {
