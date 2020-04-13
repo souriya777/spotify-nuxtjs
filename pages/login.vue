@@ -7,37 +7,34 @@
     </div>
     <div>
       <h2>Access Token</h2>
-      <code>{{ token }}</code>
+      <code>{{ accessToken }}</code>
     </div>
   </div>
 </template>
 <script>
-// TODO move in function
 import querystring from 'querystring'
 
 const AUTHORIZE_ENDPOINT = 'https://accounts.spotify.com/authorize'
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token'
-
-// GET authorizationCode & GET accessToken are in the same page ("endpoint") because if we use 2 different page, netlify consider it as a redirection, so it does not work...
 
 export default {
   async fetch() {
     this.authorizationCode = this.$route.query.code
 
     if (this.authorizationCode) {
-      await this.getToken(this.authorizationCode)
+      await this.getAccessToken(this.authorizationCode)
     } else {
-      this.login()
+      this.authorize()
     }
   },
   data() {
     return {
       authorizationCode: '',
-      token: ''
+      accessToken: ''
     }
   },
   methods: {
-    login() {
+    authorize() {
       const url = `${AUTHORIZE_ENDPOINT}?response_type=code&client_id=${
         process.env.NUXT_ENV_SPOTIFY_CLIENT_ID
       }&scope=${encodeURIComponent(
@@ -48,7 +45,7 @@ export default {
 
       window.location = url
     },
-    async getToken(authorizationCode) {
+    async getAccessToken(authorizationCode) {
       const data = {
         code: authorizationCode,
         redirect_uri: process.env.NUXT_ENV_SPOTIFY_REDIRECT_URI,
@@ -76,13 +73,7 @@ export default {
       const instance = this
       await this.$axios(options)
         .then(function(response) {
-          instance.token = {
-            access_token: response.data.access_token,
-            token_type: response.data.token_type,
-            scope: response.data.scope,
-            expires_in: response.data.expires_in,
-            refresh_token: response.data.refresh_token
-          }
+          instance.accessToken = response.data.access_token
         })
         .catch(function(error) {
           instance.token = error.toJSON()
