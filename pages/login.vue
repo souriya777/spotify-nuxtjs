@@ -42,7 +42,6 @@ export default {
       )}&redirect_uri=${encodeURIComponent(
         process.env.NUXT_ENV_SPOTIFY_REDIRECT_URI
       )}`
-
       window.location = url
     },
     async getAccessToken(authorizationCode) {
