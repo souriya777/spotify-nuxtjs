@@ -6,8 +6,13 @@
       <code>{{ authorizationCode }}</code>
     </div>
     <div>
-      <h2>Access Token</h2>
+      <h2>Access token</h2>
       <code>{{ accessToken }}</code>
+    </div>
+    <div>
+      <h2>Spotify</h2>
+      <button @click="spotifyMe">SPOTIFY ME</button>
+      <code>{{ spotifyResult }}</code>
     </div>
   </div>
 </template>
@@ -30,7 +35,8 @@ export default {
   data() {
     return {
       authorizationCode: '',
-      accessToken: ''
+      accessToken: '',
+      spotifyResult: ''
     }
   },
   methods: {
@@ -77,6 +83,16 @@ export default {
         .catch(function(error) {
           instance.token = error.toJSON()
         })
+    },
+    async spotifyMe() {
+      this.spotifyResult = await this.$axios.get(
+        'https://api.spotify.com/v1/me',
+        {
+          headers: {
+            Authorization: 'Bearer ' + this.accessToken
+          }
+        }
+      )
     }
   }
 }
