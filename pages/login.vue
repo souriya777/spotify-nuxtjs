@@ -18,20 +18,20 @@ const AUTHORIZE_ENDPOINT = 'https://accounts.spotify.com/authorize'
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token'
 
 export default {
-  async fetch() {
-    this.accessToken = this.$route.fullPath // FIXME
+  fetch() {
     this.authorizationCode = this.$route.query.code
+    this.accessToken = this.$route.fullPath
 
-    if (this.authorizationCode) {
-      await this.getAccessToken(this.authorizationCode)
-    } else {
-      this.authorize()
-    }
+    // if (this.authorizationCode) {
+    //   await this.getAccessToken(this.authorizationCode)
+    // } else {
+    // this.authorize()
+    // }
   },
   data() {
     return {
       authorizationCode: '',
-      accessToken: ''
+      accessToken: {}
     }
   },
   methods: {
