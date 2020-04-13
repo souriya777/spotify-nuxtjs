@@ -18,6 +18,8 @@ import querystring from 'querystring'
 const AUTHORIZE_ENDPOINT = 'https://accounts.spotify.com/authorize'
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token'
 
+// GET authorizationCode & GET accessToken are in the same page ("endpoint") because if we use 2 different page, netlify consider it as a redirection, so it does not work...
+
 export default {
   async fetch() {
     this.authorizationCode = this.$route.query.code
