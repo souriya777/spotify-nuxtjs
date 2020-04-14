@@ -1,6 +1,19 @@
 <template>
   <div>
     <h1>Albums</h1>
+    <div style="margin-bottom: 2rem">
+      <h2>token</h2>
+      <code>{{ accessToken }}</code>
+      <div>
+        <button @click="getAlbums">ALBUMS</button>
+      </div>
+      <div v-if="json">
+        <h2>JSON</h2>
+        <!-- eslint-disable-next-line vue/no-textarea-mustache -->
+        <textarea id="myCode">{{ json }}</textarea>
+        <button @click="copy">copy</button>
+      </div>
+    </div>
     <div class="album_list">
       <nuxt-link class="album_item" to="/album/55bxux5NGwsurOUlXfT2cv">
         <img
@@ -29,9 +42,50 @@
   </div>
 </template>
 <script>
+import gql from 'graphql-tag'
 import PlayButton from '../components/PlayButton'
+
 export default {
-  components: { PlayButton }
+  apollo: {
+    albums: gql`
+      query getAlbums {
+        albums {
+          items
+        }
+      }
+    `
+  },
+  components: { PlayButton },
+  filters: {
+    stringify(value) {
+      return JSON.stringify(value)
+    }
+  },
+  data() {
+    return {
+      accessToken: this.$apolloHelpers.getToken() + '->testa',
+      json: ''
+    }
+  },
+  methods: {
+    copy(e) {
+      const json = document.querySelector('#myCode')
+      json.select()
+      document.execCommand('copy')
+    },
+    async getAlbums() {
+      this.json = await this.$axios.get(
+        'https://api.spotify.com/v1/me/albums',
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + this.accessToken
+          }
+        }
+      )
+    }
+  }
 }
 </script>
 <style lang="scss">

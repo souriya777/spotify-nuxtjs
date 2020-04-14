@@ -52,13 +52,20 @@ export default {
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv',
-    '@nuxtjs/style-resources'
+    '@nuxtjs/style-resources',
+    '@nuxtjs/apollo'
   ],
   /*
-   ** Axios module configuration
-   ** See https://axios.nuxtjs.org/options
+   ** Apollo module configuration
+   ** See https://www.npmjs.com/package/nuxt-graphql-request
    */
-  axios: {},
+  apollo: {
+    clientConfigs: {
+      default: {
+        httpEndpoint: 'https://api.spotify.com/v1/me/albums'
+      }
+    }
+  },
   /*
    ** Build configuration
    */

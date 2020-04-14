@@ -100,6 +100,12 @@ export default {
         .catch(function(error) {
           instance.token = error.toJSON()
         })
+
+      // FIXME apollo
+      await this.$apolloHelpers.onLogin(instance.accessToken, undefined, {
+        expires: 7,
+        path: '/'
+      })
     },
     async getRefreshToken() {
       const data = {
@@ -147,8 +153,6 @@ export default {
         'https://api.spotify.com/v1/me/albums',
         {
           headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
             Authorization: 'Bearer ' + this.accessToken
           }
         }

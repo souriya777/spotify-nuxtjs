@@ -1,3 +1,10 @@
+TODO
+- intégrer une librairie Graph QL dans Nuxt.js
+- brancher l'API Spotify authorization
+- ordonnancer : authorization_code > access_token > (me) > albums
+- idem pour /playlist
+- faire l'appel à la search API
+
 # spotify-nuxtjs
 
 > A spotify player, in nuxt.js
